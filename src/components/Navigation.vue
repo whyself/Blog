@@ -1,4 +1,5 @@
 <template>
+  <canvas id="background"></canvas>
   <div class="content content-main">
     <div id="card">
       <div class="card-inner fade">
@@ -17,7 +18,6 @@
         </ul>
       </div>
     </div>
-    <canvas id="background"></canvas>
   </div>
 </template>
 
@@ -99,6 +99,15 @@ onMounted(() => {
   justify-content: center;
   text-align: center;
   overflow: hidden;
+}
+
+#background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
 #card {
