@@ -3,7 +3,7 @@
     <div id="card">
       <div class="card-inner fade">
         <header>
-          <img src="https://cdn.jsdelivr.net/gh/SimonAKing/images/blog/avatar.jpg" width="100" height="100" alt="avatar">
+          <img src="/avatar.jpg" width="100" height="100" alt="avatar">
           <h1 data-translate="name">WhySelf</h1>
           <h2 id="signature" data-translate="signature">STDIN | Think &gt;&gt; /dev/Mind</h2>
         </header>
