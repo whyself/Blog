@@ -11,7 +11,7 @@
           </svg>
         </a>
         <h2 class="content-title">WhySelf</h2>
-        <h3 class="content-subtitle" original-content="Front back left right end engineer">MyBolg</h3>
+        <h3 class="content-subtitle" original-content="Front back left right end engineer">MyBlog</h3>
         <button class="enter" @click="goToNav" aria-label="进入导航页面">PRESS START</button>
       </div>
     </div>
