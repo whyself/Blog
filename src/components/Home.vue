@@ -3,7 +3,7 @@
     <canvas id="background"></canvas>
     <div class="content-inner">
       <div class="wrap fade">
-        <a class="github-corner" href="https://github.com/SimonAKing/HomePage" aria-label="View source on GitHub" target="_blank" rel="noopener noreferrer">
+        <a class="github-corner" href="https://github.com/whyself/Blog" aria-label="View source on GitHub" target="_blank" rel="noopener noreferrer">
           <svg width="80" height="80" viewBox="0 0 250 250" style="fill:transparent; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true">
             <path d="M0 0 115 115 130 115 142 142 250 250 250 0Z"></path>
             <path class="octo-arm" d="M128.3 109C113.8 99.7 119 89.6 119 89.6 122 82.7 120.5 78.6 120.5 78.6 119.2 72 123.4 76.3 123.4 76.3 127.3 80.9 125.5 87.3 125.5 87.3 122.9 97.6 130.6 101.9 134.4 103.2" fill="currentColor" style="transform-origin: 130px 106px;"></path>
