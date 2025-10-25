@@ -1,35 +1,33 @@
-@import './base.css';
+/* 导入Comic字体 */
+@import url('https://cdn.jsdelivr.net/gh/SimonAKing/font/comic.min.css');
+
+/* 全局样式 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Comic Sans MS', 'Comic Neue', cursive, sans-serif;
+  background: #222325;
+  color: #fff;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+  min-height: 100vh;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .content-intro h2 {
+    font-size: 3rem !important; /* 从2rem增加到3rem，因为主标题放大了 */
   }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
+  .content-intro h3 {
+    font-size: 1rem !important;
   }
 }

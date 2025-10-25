@@ -1,0 +1,16 @@
+{
+    "name": "SimonAKing Blog",
+    "short_name": "SimonAKing",
+    "description": "SimonAKing的个人博客",
+    "start_url": "/Blog/",
+    "display": "standalone",
+    "background_color": "#222325",
+    "theme_color": "#222325",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        }
+    ]
+}
