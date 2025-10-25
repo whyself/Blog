@@ -315,6 +315,7 @@ watch(
   font-size: 1.05rem;
   line-height: 1.8;
   color: rgba(247, 248, 249, 0.92);
+  max-width: 1200px;
 }
 
 .markdown-body h1,

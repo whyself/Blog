@@ -10,7 +10,7 @@
 
 html, body {
   height: 100%;
-  font-family: 'Comic Sans MS', 'Comic Neue', cursive, sans-serif;
+  font-family: 'Comic Sans MS', 'Comic Neue', 'SimHei', 'Microsoft YaHei', cursive, sans-serif;
   background: #222325;
   color: #fff;
   overflow-x: hidden;
