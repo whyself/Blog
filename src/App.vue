@@ -14,24 +14,35 @@ const router = useRouter()
 
 <style>
 /* 页面切换动画 */
-.slide-up-enter-active,
+.slide-up-enter-active {
+  transition: all 0.6s ease-out;
+  animation: slide-in 0.6s ease-out;
+}
+
 .slide-up-leave-active {
-  transition: all 0.8s ease-in-out;
+  transition: all 0.6s ease-in;
+  animation: slide-out 0.6s ease-in;
 }
 
-.slide-up-enter-from {
-  opacity: 0;
-  transform: translateY(100vh);
+@keyframes slide-out {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh);
+  }
 }
 
-.slide-up-leave-to {
-  opacity: 0;
-  transform: translateY(-100vh);
-}
-
-.slide-up-enter-to,
-.slide-up-leave-from {
-  opacity: 1;
-  transform: translateY(0);
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(100vh);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>
