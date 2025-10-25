@@ -17,17 +17,17 @@
         </ul>
       </div>
     </div>
-    <canvas class="grid-background" id="gridCanvas"></canvas>
+    <canvas id="background"></canvas>
   </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
-import { initGridAnimation } from '../utils/background.js'
+import { initBackgroundAnimation } from '../utils/background.js'
 
-// 组件挂载后初始化网格背景动画和anime.js动画
+// 组件挂载后初始化星空背景动画和anime.js动画
 onMounted(() => {
-  initGridAnimation('gridCanvas')
+  initBackgroundAnimation('background')
 
   // 等待anime.js加载
   const initAnime = () => {
