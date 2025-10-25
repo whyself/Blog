@@ -1,11 +1,16 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import SharedBackground from './components/SharedBackground.vue'
 
 const router = useRouter()
 </script>
 
 <template>
   <div id="app">
+    <!-- 共享背景，一直挂载 -->
+    <SharedBackground />
+
+    <!-- 路由视图使用 transition 做向上滑切换 -->
     <transition name="slide-up" mode="out-in">
       <router-view />
     </transition>
@@ -13,34 +18,32 @@ const router = useRouter()
 </template>
 
 <style>
-/* 页面切换动画 - 流畅连续滑动 */
-.slide-up-enter-active {
-  animation: slide-in-smooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* App容器样式 */
+#app {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
+/* 页面切换动画 */
+.slide-up-enter-active,
 .slide-up-leave-active {
-  animation: slide-out-smooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.8s ease, opacity 0.8s ease;
 }
 
-@keyframes slide-out-smooth {
-  0% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-100vh);
-  }
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(100vh);
 }
 
-@keyframes slide-in-smooth {
-  0% {
-    opacity: 0;
-    transform: translateY(100vh);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-100vh);
+}
+
+.slide-up-enter-to,
+.slide-up-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

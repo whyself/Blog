@@ -1,6 +1,5 @@
 <template>
   <div class="content content-intro">
-    <canvas id="background"></canvas>
     <div class="content-inner">
       <div class="wrap fade">
         <a class="github-corner" href="https://github.com/whyself/Blog" aria-label="View source on GitHub" target="_blank" rel="noopener noreferrer">
@@ -28,7 +27,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { onMounted, onUnmounted } from 'vue'
-import { initBackgroundAnimation } from '../utils/background.js'
 
 const router = useRouter()
 
@@ -43,10 +41,8 @@ const handleKeyPress = (event) => {
   }
 }
 
-// 组件挂载后初始化背景动画和anime.js动画
+// 组件挂载后初始化anime.js动画
 onMounted(() => {
-  initBackgroundAnimation('background')
-
   // 添加键盘事件监听
   document.addEventListener('keydown', handleKeyPress)
 
