@@ -1,7 +1,7 @@
 {
-    "name": "SimonAKing Blog",
-    "short_name": "SimonAKing",
-    "description": "SimonAKing的个人博客",
+    "name": "WhySelf Blog",
+    "short_name": "WhySelf",
+    "description": "WhySelf的个人博客",
     "start_url": "/Blog/",
     "display": "standalone",
     "background_color": "#222325",
