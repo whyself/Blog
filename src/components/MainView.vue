@@ -29,24 +29,18 @@
       </div>
 
       <!-- Navigation页面内容 -->
-      <div v-else key="nav" class="view-container">
-        <div class="content content-main">
-          <div id="card">
-            <div class="card-inner fade">
-              <header>
-                <img src="/avatar.jpg" width="100" height="100" alt="avatar">
-                <h1 data-translate="name">WhySelf</h1>
-                <h2 id="signature" data-translate="signature">STDIN | Think &gt;&gt; /dev/Mind</h2>
-              </header>
-              <ul>
-                <li><router-link to="/blog" aria-label="Blog"><i class="icon icon-bokeyuan"></i><span data-translate="Blog">Blog</span></router-link></li>
-                <li><router-link to="/thoughts" aria-label="Thoughts"><i class="icon icon-biaoqing"></i><span data-translate="Thoughts">Thoughts</span></router-link></li>
-                <li><router-link to="/about" aria-label="About"><i class="icon icon-zhifeiji"></i><span data-translate="About">About</span></router-link></li>
-                <li><router-link to="/gallery" aria-label="Gallery"><i class="icon icon-xiangce"></i><span data-translate="Gallery">Gallery</span></router-link></li>
-                <li><router-link to="/projects" aria-label="Projects"><i class="icon icon-projects"></i><span data-translate="Projects">Projects</span></router-link></li>
-                <li><a href="https://thinking.simonaking.com/" aria-label="Thinking" target="_blank" rel="noopener"><i class="icon icon-idea"></i><span data-translate="Thinking">Thinking</span></a></li>
-              </ul>
-            </div>
+      <div v-else key="nav" class="content content-main">
+        <div id="card">
+          <div class="card-inner fade">
+            <header>
+              <img src="/avatar.jpg" width="100" height="100" alt="avatar">
+              <h1 data-translate="name">WhySelf</h1>
+              <h2 id="signature" data-translate="signature">Restart.</h2>
+            </header>
+            <ul>
+              <li><router-link to="/articles" aria-label="Articles"><i class="icon icon-bokeyuan"></i><span data-translate="Articles">Articles</span></router-link></li>
+              <li><a href="https://thinking.simonaking.com/" aria-label="Thinking" target="_blank" rel="noopener"><i class="icon icon-idea"></i><span data-translate="Thinking">Thinking</span></a></li>
+            </ul>
           </div>
         </div>
       </div>
@@ -133,6 +127,38 @@ onUnmounted(() => {
   width: 100%;
   height: 100vh;
   overflow: hidden;
+}
+
+@font-face {
+  font-family: 'iconfont';
+  font-display: auto;
+  src: url('//at.alicdn.com/t/font_1056856_p9cyrhslv5j.eot?t=1551327438450'); /* IE9 */
+  src: url('//at.alicdn.com/t/font_1056856_p9cyrhslv5j.eot?t=1551327438450#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('data:application/x-font-woff2;charset=utf-8;base64,d09GMgABAAAAAAigAAsAAAAADxAAAAhSAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHEIGVgCEGAqPYIxdATYCJAMoCxYABCAFhG0HgRQbrwwjESZs1EX2FweZ3MWewKz2pGZnd5rMSlW4wjhlUqUv84D8x7m53bQj8T4Hz9Pa78/Mnd2n0iCRzCSrJLcMiURoGqJmutdv1r4PT5v7d9ySVimxGAuMWltbA1uzisTgtO+MAvywyraIH900QMCZeai4teMO1gmaEPOX8IubdfdzChP1jinP/vLTMlNIWwgfwvr/71XNxGyQebMtQAGL4ftZY3bshT2lD1ygsYb9UrDBaktSIA...') format('woff2'),
+       url('//at.alicdn.com/t/font_1056856_p9cyrhslv5j.woff?t=1551327438450') format('woff'),
+       url('//at.alicdn.com/t/font_1056856_p9cyrhslv5j.ttf?t=1551327438450') format('truetype'),
+       url('//at.alicdn.com/t/font_1056856_p9cyrhslv5j.svg?t=1551327438450#iconfont') format('svg'); /* iOS 4.1- */
+}
+
+.icon {
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0 auto;
+  fill: currentColor;
+  font-family: 'iconfont' !important;
+  font-size: 1.2em;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-bokeyuan:before {
+  content: '\e603';
+}
+
+.icon-idea:before {
+  content: '\e650';
 }
 
 .view-container {
@@ -336,7 +362,10 @@ onUnmounted(() => {
 
 /* Navigation页面样式 */
 .content-main {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   height: 100vh;
   display: flex;
   align-items: center;
@@ -345,7 +374,7 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-#card {
+/* #card {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 3rem;
@@ -356,6 +385,23 @@ onUnmounted(() => {
   width: 90%;
   z-index: 2;
   position: relative;
+} */
+ #card {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 15px; /* 添加圆角 */
+  cursor: pointer;
+  transition: all 0.3s;
+  margin: 2rem 0;
+  font-family: inherit;
+  font-size: inherit;
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+  width: 500px; /* 固定宽度 */
 }
 
 .card-inner header img {
@@ -378,32 +424,32 @@ onUnmounted(() => {
   list-style: none;
   padding: 0;
   margin: 2rem 0 0 0;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
 }
 
 .card-inner li {
-  margin: 1rem 0;
+  margin: 0;
+  font-size: 1.2em;
 }
 
 .card-inner a {
-  display: block;
-  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   color: #fff;
   text-decoration: none;
-  border-radius: 8px;
   transition: all 0.3s;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 0.5rem; /* 图标和文字之间的间距 */
 }
 
 .card-inner a:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.card-inner i {
-  margin-right: 0.5rem;
-  opacity: 0.8;
+.card-inner span {
+  text-align: center;
 }
 
 /* 响应式设计 */
