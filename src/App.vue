@@ -6,10 +6,32 @@ const router = useRouter()
 
 <template>
   <div id="app">
-    <router-view />
+    <transition name="slide-up" mode="out-in">
+      <router-view />
+    </transition>
   </div>
 </template>
 
-<style scoped>
-/* 清理样式 */
+<style>
+/* 页面切换动画 */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.8s ease-in-out;
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(100vh);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-100vh);
+}
+
+.slide-up-enter-to,
+.slide-up-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
 </style>
