@@ -13,23 +13,19 @@ const router = useRouter()
 </template>
 
 <style>
-/* 页面切换动画 - 连续滑动衔接效果 */
+/* 页面切换动画 - 流畅连续滑动 */
 .slide-up-enter-active {
-  animation: slide-in-continuous 1.2s ease-out;
+  animation: slide-in-smooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .slide-up-leave-active {
-  animation: slide-out-continuous 1.2s ease-in;
+  animation: slide-out-smooth 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@keyframes slide-out-continuous {
+@keyframes slide-out-smooth {
   0% {
     opacity: 1;
     transform: translateY(0);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(-50vh);
   }
   100% {
     opacity: 0;
@@ -37,14 +33,10 @@ const router = useRouter()
   }
 }
 
-@keyframes slide-in-continuous {
+@keyframes slide-in-smooth {
   0% {
     opacity: 0;
     transform: translateY(100vh);
-  }
-  50% {
-    opacity: 1;
-    transform: translateY(50vh);
   }
   100% {
     opacity: 1;
