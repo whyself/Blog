@@ -1,5 +1,4 @@
 <template>
-  <canvas id="background"></canvas>
   <div class="content content-main">
     <div id="card">
       <div class="card-inner fade">
@@ -23,11 +22,9 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { initBackgroundAnimation } from '../utils/background.js'
 
-// 组件挂载后初始化星空背景动画和anime.js动画
+// 组件挂载后初始化anime.js动画
 onMounted(() => {
-  initBackgroundAnimation('background')
 
   // 等待anime.js加载
   const initAnime = () => {
@@ -99,15 +96,6 @@ onMounted(() => {
   justify-content: center;
   text-align: center;
   overflow: hidden;
-}
-
-#background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
 }
 
 #card {
