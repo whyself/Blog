@@ -13,7 +13,7 @@
                   <path class="octo-body" d="M115 115C114.9 115.1 118.7 116.5 119.8 115.4L133.7 101.6C136.9 99.2 139.9 98.4 142.2 98.6 133.8 88 127.5 74.4 143.8 58 148.5 53.4 154 51.2 159.7 51 160.3 49.4 163.2 43.6 171.4 40.1 171.4 40.1 176.1 42.5 178.8 56.2 183.1 58.6 187.2 61.8 190.9 65.4 194.5 69 197.7 73.2 200.1 77.6 213.8 80.2 216.3 84.9 216.3 84.9 212.7 93.1 206.9 96 205.4 96.6 205.1 102.4 203 107.8 198.3 112.5 181.9 128.9 168.3 122.5 157.7 114.1 157.9 116.9 156.7 120.9 152.7 124.9L141 136.5C139.8 137.7 141.6 141.9 141.8 141.8Z" fill="currentColor"></path>
                 </svg>
               </a>
-              <h2 class="content-title">WhySelf</h2>
+              <h2 class="content-title">whyself</h2>
               <h3 class="content-subtitle" original-content="Front back left right end engineer">MyBlog</h3>
               <button class="enter" @click="goToNav" aria-label="进入导航页面">PRESS START</button>
             </div>
@@ -34,12 +34,11 @@
           <div class="card-inner fade">
             <header>
               <img src="/avatar.jpg" width="100" height="100" alt="avatar">
-              <h1 data-translate="name">WhySelf</h1>
+              <h1 data-translate="name">whyself</h1>
               <h2 id="signature" data-translate="signature">Restart.</h2>
             </header>
             <ul>
               <li><router-link to="/articles" aria-label="Articles"><i class="icon icon-bokeyuan"></i><span data-translate="Articles">Articles</span></router-link></li>
-              <li><a href="https://thinking.simonaking.com/" aria-label="Thinking" target="_blank" rel="noopener"><i class="icon icon-idea"></i><span data-translate="Thinking">Thinking</span></a></li>
             </ul>
           </div>
         </div>

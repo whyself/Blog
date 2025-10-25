@@ -109,8 +109,8 @@ export function initBackgroundAnimation(canvasId) {
       const distance = Math.sqrt(lengthX ** 2 + lengthY ** 2);
       if (distance >= connection) return;
       const rate = 1 - distance / connection; // 距离越小此值约接近1
-      this.speedX = 20 * rate * -lengthX / distance; // 从40降低到20
-      this.speedY = 20 * rate * -lengthY / distance; // 从40降低到20
+      this.speedX = 10 * rate * -lengthX / distance; // 从40降低到20
+      this.speedY = 10 * rate * -lengthY / distance; // 从40降低到20
     }
   }
 
