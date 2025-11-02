@@ -1,16 +1,25 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+﻿const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs/promises');
 const { existsSync } = require('node:fs');
 const { spawn } = require('node:child_process');
 const { pathToFileURL } = require('node:url');
+const Store = require('electron-store');
 
 let mainWindow;
-let blogRoot;
+let blogRoot = '';
+
+const store = new Store({
+  name: 'article-manager',
+  defaults: {
+    blogRoot: ''
+  }
+});
 
 const ARTICLES_SEGMENTS = ['src', 'articles'];
 const METADATA_FILE_NAME = 'metadata.js';
 const METADATA_FIELDS = ['id', 'title', 'date', 'author', 'readTime', 'summary', 'file'];
+
 const resolveNpmRunner = () => {
   if (process.env.npm_execpath) {
     return {
@@ -43,9 +52,11 @@ const createWindow = () => {
   if (devServerUrl) {
     mainWindow.loadURL(devServerUrl);
     mainWindow.webContents.openDevTools({ mode: 'detach' });
-  } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    return;
   }
+
+  const indexHtml = path.join(app.getAppPath(), 'dist', 'renderer', 'index.html');
+  mainWindow.loadFile(indexHtml);
 };
 
 const ensureBlogRoot = () => {
@@ -55,25 +66,57 @@ const ensureBlogRoot = () => {
     candidates.push(process.env.BLOG_ROOT);
   }
 
-  candidates.push(process.cwd());
+  const cached = store.get('blogRoot');
+  if (cached) {
+    candidates.push(cached);
+  }
+
+  const addCandidate = (value) => {
+    if (value && !candidates.includes(value)) {
+      candidates.push(value);
+    }
+  };
+
+  addCandidate(process.cwd());
+
   const appPath = app.getAppPath();
-  candidates.push(appPath);
-  candidates.push(path.resolve(appPath, '..'));
-  candidates.push(path.resolve(appPath, '..', '..'));
+  addCandidate(appPath);
+  addCandidate(path.resolve(appPath, '..'));
+  addCandidate(path.resolve(appPath, '..', '..'));
+
+  const resourcesPath = process.resourcesPath;
+  addCandidate(path.resolve(resourcesPath, '..'));
+  addCandidate(path.resolve(resourcesPath, '..', '..'));
+
+  const execDir = path.dirname(process.execPath);
+  addCandidate(execDir);
+  addCandidate(path.resolve(execDir, '..'));
 
   for (const candidate of candidates) {
     if (!candidate) continue;
     const articlesDir = path.join(candidate, ...ARTICLES_SEGMENTS);
     if (existsSync(articlesDir)) {
-      return path.resolve(candidate);
+      const resolved = path.resolve(candidate);
+      store.set('blogRoot', resolved);
+      blogRoot = resolved;
+      return resolved;
     }
   }
 
-  return appPath;
+  blogRoot = '';
+  return blogRoot;
+};
+
+const ensureBlogRootOrThrow = () => {
+  const resolved = blogRoot || ensureBlogRoot();
+  if (!resolved) {
+    throw new Error('博客根目录未配置');
+  }
+  return resolved;
 };
 
 const getArticlesDir = () => {
-  return path.join(blogRoot, ...ARTICLES_SEGMENTS);
+  return path.join(ensureBlogRootOrThrow(), ...ARTICLES_SEGMENTS);
 };
 
 const getMetadataPath = () => {
@@ -84,17 +127,21 @@ const toSafeArticlePath = (name) => {
   if (!name || typeof name !== 'string') {
     throw new Error('文件名不能为空');
   }
+
   const normalised = name.replace(/\\/g, '/');
   if (normalised.includes('..')) {
     throw new Error('文件名不合法');
   }
+
   const finalName = normalised.endsWith('.md') ? normalised : `${normalised}.md`;
   return path.join(getArticlesDir(), finalName);
 };
 
 const execGit = (args) => {
+  const cwd = ensureBlogRootOrThrow();
+
   return new Promise((resolve, reject) => {
-  const child = spawn('git', args, { cwd: blogRoot });
+    const child = spawn('git', args, { cwd });
     let stdout = '';
     let stderr = '';
 
@@ -122,9 +169,15 @@ const execGit = (args) => {
 };
 
 const execNpmScript = (script) => {
+  const cwd = ensureBlogRootOrThrow();
+
   return new Promise((resolve, reject) => {
-    const child = spawn(NPM_COMMAND, [...NPM_ARGS, script], {
-      cwd: blogRoot,
+    const isWindows = process.platform === 'win32';
+    const command = isWindows ? 'cmd.exe' : NPM_COMMAND;
+    const args = isWindows ? ['/d', '/s', '/c', `npm run ${script}`] : [...NPM_ARGS, script];
+
+    const child = spawn(command, args, {
+      cwd,
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe']
     });
@@ -178,6 +231,102 @@ const formatMetadata = (entries) => {
   return `export const articlesMeta = [${tail}]\n`;
 };
 
+const normaliseArticleName = (value) => {
+  if (!value) {
+    return '';
+  }
+
+  const cleaned = value.replace(/\\/g, '/').trim();
+  if (!cleaned) {
+    return '';
+  }
+
+  const segments = cleaned.split('/');
+  const base = segments[segments.length - 1] || cleaned;
+  if (!base) {
+    return '';
+  }
+
+  if (base.toLowerCase() === 'metadata.js') {
+    return '';
+  }
+
+  return base.endsWith('.md') ? base.slice(0, -3) : base;
+};
+
+const buildAutoCommitMessage = (rawStatus, articleHint = '') => {
+  if (!rawStatus) {
+    return '';
+  }
+
+  const lines = rawStatus
+    .split(/[\r\n]+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (!lines.length) {
+    return '';
+  }
+
+  const hintName = normaliseArticleName(articleHint);
+  const segments = [];
+
+  for (const line of lines) {
+    const status = line.slice(0, 2);
+    let file = line.slice(3).trim();
+
+    if (!file) {
+      continue;
+    }
+
+    if (file.includes('->')) {
+      const parts = file.split('->');
+      file = (parts[1] ?? parts[0]).trim();
+    }
+
+    if (file.startsWith('"') && file.endsWith('"')) {
+      file = file.slice(1, -1);
+    }
+
+    const base = path.basename(file).replace(/\\/g, '/');
+    const lowerBase = base.toLowerCase();
+
+    let article = base.endsWith('.md') ? base.slice(0, -3) : '';
+
+    if (!article) {
+      article = lowerBase === 'metadata.js' ? '' : base.replace(/\.[^/.]+$/, '');
+    }
+
+    if ((!article || lowerBase === 'metadata.js') && hintName) {
+      article = hintName;
+    }
+
+    if (!article) {
+      if (lowerBase === 'metadata.js') {
+        // 如果仅触发元数据改动且没有文章提示，则跳过该记录
+        continue;
+      }
+      article = base;
+    }
+
+    let prefix = '修改文章';
+    if (status.includes('?') || status.includes('A')) {
+      prefix = '新建文章';
+    } else if (status.includes('D')) {
+      prefix = '删除文章';
+    }
+
+    const entry = `${prefix}${article}`;
+    if (lowerBase === 'metadata.js' && segments.includes(entry)) {
+      continue;
+    }
+
+    segments.push(entry);
+  }
+
+  return Array.from(new Set(segments)).join('、');
+};
+
 const loadArticlesMeta = async () => {
   const metadataPath = getMetadataPath();
 
@@ -213,6 +362,32 @@ const writeArticlesMeta = async (entries) => {
 };
 
 const registerIpcHandlers = () => {
+  ipcMain.handle('app:getBlogRoot', async () => {
+    const root = blogRoot || ensureBlogRoot();
+    return { blogRoot: root };
+  });
+
+  ipcMain.handle('app:selectBlogRoot', async () => {
+    const result = await dialog.showOpenDialog(mainWindow, {
+      title: '选择博客仓库目录',
+      properties: ['openDirectory']
+    });
+
+    if (result.canceled || !result.filePaths?.length) {
+      throw new Error('未选择目录');
+    }
+
+    const chosen = path.resolve(result.filePaths[0]);
+    const articlesDir = path.join(chosen, ...ARTICLES_SEGMENTS);
+    if (!existsSync(articlesDir)) {
+      throw new Error('选定目录下不存在 src/articles');
+    }
+
+    store.set('blogRoot', chosen);
+    blogRoot = chosen;
+    return { blogRoot: chosen };
+  });
+
   ipcMain.handle('articles:list', async () => {
     const dir = getArticlesDir();
     const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -254,13 +429,22 @@ const registerIpcHandlers = () => {
       return { deleted: false };
     }
 
+
+        try {
+          const list = await loadArticlesMeta();
+          const filtered = list.filter((entry) => entry.file !== path.basename(filePath));
+          if (filtered.length !== list.length) {
+            await writeArticlesMeta(filtered);
+          }
+        } catch (error) {
+          console.warn('[Article Manager] Failed to remove metadata for deleted article:', error.message);
+        }
     await fs.unlink(filePath);
     return { deleted: true };
   });
 
   ipcMain.handle('git:status', async () => {
-    const status = await execGit(['status', '--short', 'src/articles']);
-    return status;
+    return execGit(['status', '--short', 'src/articles']);
   });
 
   ipcMain.handle('git:commitAndPush', async (_event, message) => {
@@ -321,6 +505,42 @@ const registerIpcHandlers = () => {
     return entry;
   });
 
+  ipcMain.handle('project:autoCommitPushDeploy', async (_event, articleHint = '') => {
+    const status = await execGit(['status', '--porcelain', 'src/articles']);
+    const commitMessage = buildAutoCommitMessage(status, articleHint);
+
+    if (!commitMessage) {
+      throw new Error('没有检测到文章改动');
+    }
+
+    const outputs = [];
+
+    await execGit(['add', 'src/articles']);
+
+    const commitResult = await execGit(['commit', '-m', commitMessage]);
+    outputs.push(`git commit -m "${commitMessage}"\n${commitResult}`);
+
+    const pushResult = await execGit(['push']);
+    outputs.push(`git push\n${pushResult}`);
+
+    const scripts = ['build', 'deploy'];
+    for (const script of scripts) {
+      try {
+        const output = await execNpmScript(script);
+        outputs.push(`npm run ${script}\n${output}`);
+      } catch (error) {
+        outputs.push(`npm run ${script}\n${error.message || error}`);
+        throw error;
+      }
+    }
+
+    return {
+      message: '提交、推送并部署完成',
+      commitMessage,
+      output: outputs.join('\n\n')
+    };
+  });
+
   ipcMain.handle('project:buildAndDeploy', async () => {
     const outputs = [];
     const scripts = ['build', 'deploy'];
@@ -343,7 +563,7 @@ const registerIpcHandlers = () => {
 
 app.whenReady().then(() => {
   blogRoot = ensureBlogRoot();
-  console.log(`[Article Manager] Using blog root: ${blogRoot}`);
+  console.log(`[Article Manager] Using blog root: ${blogRoot || '未定位'}`);
   createWindow();
   registerIpcHandlers();
 

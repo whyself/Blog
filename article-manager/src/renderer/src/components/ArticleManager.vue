@@ -6,6 +6,9 @@
         <button class="ghost" @click="loadArticles" :disabled="isLoading">
           刷新
         </button>
+        <button class="ghost" @click="selectBlogRoot" :disabled="isLoading">
+          设置目录
+        </button>
       </header>
 
       <div class="list" v-if="articles.length">
@@ -14,6 +17,7 @@
           :key="item"
           class="list__item"
           :class="{ active: item === currentArticleName }"
+          :disabled="isLoading"
           @click="() => selectArticle(item)"
         >
           {{ item }}
@@ -47,20 +51,8 @@
           </button>
         </div>
         <pre class="git__status">{{ gitStatus || '暂无改动' }}</pre>
-        <input
-          v-model="commitMessage"
-          placeholder="提交信息"
-          spellcheck="false"
-        />
-        <button
-          class="primary"
-          @click="commitAndPush"
-          :disabled="!commitMessage.trim() || isLoading"
-        >
-          提交并推送
-        </button>
-        <button class="primary" @click="buildAndDeploy" :disabled="isLoading">
-          构建并部署
+        <button class="primary" @click="commitPushAndDeploy" :disabled="isLoading">
+          提交并部署
         </button>
         <pre v-if="deploymentLog" class="deploy__log">{{ deploymentLog }}</pre>
       </section>
@@ -142,7 +134,6 @@ const articles = ref([]);
 const currentArticleName = ref('');
 const currentContent = ref('');
 const newArticleName = ref('');
-const commitMessage = ref('');
 const gitStatus = ref('');
 const feedbackMessage = ref('');
 const errorMessage = ref('');
@@ -152,6 +143,7 @@ const metadataList = ref([]);
 const metadataForm = ref(createEmptyMetadata());
 
 const api = window.articleApi;
+const blogRoot = ref('');
 
 function createEmptyMetadata(file = '') {
   const today = new Date().toISOString().slice(0, 10);
@@ -190,6 +182,10 @@ const fetchArticles = async () => {
   }
 };
 
+const loadArticles = async () => {
+  await withLoading(fetchArticles);
+};
+
 const fetchGitStatus = async () => {
   gitStatus.value = await api.gitStatus();
 };
@@ -216,8 +212,19 @@ const fetchMetadata = async () => {
   }
 };
 
-const loadArticles = async () => {
+const ensureBlogRoot = async () => {
+  try {
+    const info = await api.getBlogRoot();
+    blogRoot.value = info.blogRoot;
+  } catch (error) {
+    console.warn('无法读取博客路径', error);
+  }
+};
+
+const selectBlogRoot = async () => {
   await withLoading(async () => {
+    const result = await api.selectBlogRoot();
+    blogRoot.value = result.blogRoot;
     await fetchArticles();
     await fetchMetadata();
   });
@@ -267,6 +274,7 @@ const deleteCurrentArticle = async () => {
       currentContent.value = '';
       metadataForm.value = createEmptyMetadata();
       await fetchArticles();
+      await fetchMetadata();
       await fetchGitStatus();
     }
   });
@@ -291,29 +299,23 @@ const loadGitStatus = async () => {
   await withLoading(fetchGitStatus);
 };
 
-const commitAndPush = async () => {
-  const message = commitMessage.value.trim();
-  if (!message) return;
-  await withLoading(async () => {
-    const result = await api.commitAndPush(message);
-    commitMessage.value = '';
-    feedbackMessage.value = result.message || '推送完成';
-    await fetchGitStatus();
-  });
-};
-
-const buildAndDeploy = async () => {
+const commitPushAndDeploy = async () => {
   deploymentLog.value = '';
   await withLoading(async () => {
-    const result = await api.buildAndDeploy();
+    const result = await api.commitPushAndDeploy(currentArticleName.value || '');
     deploymentLog.value = result.output || '';
-    feedbackMessage.value = result.message || '构建部署完成';
+    const summary = result.message || '提交并部署完成';
+    feedbackMessage.value = result.commitMessage ? `${summary}（${result.commitMessage}）` : summary;
     await fetchGitStatus();
+    await fetchArticles();
+    await fetchMetadata();
   });
 };
 
 onMounted(async () => {
+  await ensureBlogRoot();
   await loadArticles();
+  await fetchMetadata();
   await loadGitStatus();
 });
 </script>
@@ -369,6 +371,15 @@ onMounted(async () => {
 
 .list__item.active {
   background: rgba(14, 116, 144, 0.6);
+}
+
+.list__item:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.list__item:disabled:hover {
+  background: transparent;
 }
 
 .empty {

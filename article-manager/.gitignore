@@ -10,6 +10,11 @@ pnpm-debug.log*
 # Production
 /dist
 /dist-electron
+/release
+
+# App release output
+release/
+article-manager/release/
 
 # Misc
 .DS_Store

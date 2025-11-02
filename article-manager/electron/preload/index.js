@@ -11,5 +11,8 @@ contextBridge.exposeInMainWorld('articleApi', {
   commitAndPush: (message) => invoke('git:commitAndPush', message),
   listMetadata: () => invoke('metadata:list'),
   saveMetadataEntry: (entry) => invoke('metadata:saveEntry', entry),
-  buildAndDeploy: () => invoke('project:buildAndDeploy')
+  buildAndDeploy: () => invoke('project:buildAndDeploy'),
+  commitPushAndDeploy: (articleName) => invoke('project:autoCommitPushDeploy', articleName),
+  selectBlogRoot: () => invoke('app:selectBlogRoot'),
+  getBlogRoot: () => invoke('app:getBlogRoot')
 });

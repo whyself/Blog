@@ -27,6 +27,10 @@ export default defineConfig({
         '@': resolve(__dirname, 'src/renderer/src')
       }
     },
-    plugins: [vue()]
+    plugins: [vue()],
+    build: {
+      outDir: 'dist/renderer',
+      emptyOutDir: true
+    }
   }
 });
