@@ -23,7 +23,7 @@ export const articlesMeta = [
     id: 'test',
     title: 'test1234',
     date: '2025-11-2',
-    author: 'WhySelf',
+    author: 'whyself',
     readTime: '1 min read',
     summary: 'test',
     file: 'test.md'
